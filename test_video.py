@@ -6,7 +6,9 @@ import os
 import shutil
 import subprocess
 import ffmpeg
+from multiprocessing.pool import ThreadPool as Pool
 import time
+
 # import ffmepg binary file in bin folder!!
 client_id = "uc4dkdk0aam0pqtmmeujj6ztl5uqmp"
 client_secret = "rnz2ayo0vhraicw2s1lop8nn4jg7qn"
@@ -71,7 +73,7 @@ def get_vid_duration(vid_info):
     hour = hour*60
     minute = hour+minute
     second = (minute*60) + second
-    total_ts_files = (second/10) + 10:
+    total_ts_files = (second/10) + 10
     total_ts_files = math.ceil(total_ts_files)
     return total_ts_files
 
@@ -157,6 +159,17 @@ def join_videos(test_dir, vid_num):
     print("done")
 
 
+def download_multi(file_name, url, test_dir):
+    file_name = str(file_name)
+    req = requests.get(url, stream=True, headers=headers)
+
+    if req.ok:
+        with open(test_dir + '/' + file_name, 'wb') as out_file:
+            shutil.copyfileobj(req.raw, out_file)
+    else:
+        pass
+
+
 def download(vid_num):
     vid_info = get_stream_info(vid_num)
     print(vid_info)
@@ -168,16 +181,30 @@ def download(vid_num):
 #    for i in range(total_ts_files):
 #        print(ts_url_list[i])
 
+    pool_size = 4
+    pool = Pool(pool_size)
+
     test_dir = make_dir(vid_info)
     # test
-    for i in range(60):
-        url = requests.get(ts_url_list[i], stream=True, headers=headers)
+    for i in range(20):
+        #url = requests.get(ts_url_list[i], stream=True, headers=headers)
         file_name = re.split('/', ts_url_list[i])
         file_name = file_name[5]
-        if url.ok:
-            with open(test_dir + '/' + file_name, 'wb') as out_file:
-                shutil.copyfileobj(url.raw, out_file)
+        pool.apply_async(download_multi, (file_name, ts_url_list[i], test_dir))
+        # if url.ok:
+        #     with open(test_dir + '/' + file_name, 'wb') as out_file:
+        #         shutil.copyfileobj(url.raw, out_file)
+    pool.close()
+    pool.join()
 
     join_videos(test_dir, vid_num)
 
     return
+
+
+# https://www.twitch.tv/videos/764048201
+start_time = time.time()
+download("764048201")
+os.system('clear')
+print("Exe time test - after ")
+print("Execution time : "+str(time.time()-start_time))
