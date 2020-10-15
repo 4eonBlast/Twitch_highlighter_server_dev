@@ -4,6 +4,7 @@
 *.pyc
 __pycache__/
 __migrations__/
+.vscode/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
