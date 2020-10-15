@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('users.urls')),
     path('input/', include('videos.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),  # login, logout
 ]

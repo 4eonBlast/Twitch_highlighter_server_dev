@@ -1,0 +1,16 @@
+{%extends "registration/_base.html"%} {%block content %}
+<div style="padding-left: 50px; padding-top: 50px">
+  <h1>Login</h1>
+  <hr />
+  <div class="row mt-5">
+    <div class="col-12">
+      <form action="{%url 'login'%}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="" />
+        {{form.as_p}}
+        <button type="submit" class="btn btn-secondary">login</button>
+      </form>
+    </div>
+  </div>
+</div>
+{%endblock%}
