@@ -14,11 +14,11 @@ def get_vid(request):
 
     if request.method == 'GET':
         vidurl_form = VidInputForm()
-        return render(request, 'registration/vidurl.html', {'vidurl_form': vidurl_form})
+        return render(request, 'registration/getvidurl.html', {'vidurl_form': vidurl_form})
 
     if request. method == 'POST':
 
-        return HttpResponse("<div>Hello World!</div>")
+        return HttpResponse("<div>Hello!</div>")
 
 
 @csrf_exempt

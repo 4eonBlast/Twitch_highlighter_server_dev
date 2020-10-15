@@ -1,0 +1,19 @@
+<script type="text/javascript">
+  $(document).ready(function (event) {
+    $(document).on("click", "#submit_btn", function (event) {
+      if ($("#vid_url")) {
+        $("#submit_text").text("Hello");
+      } else {
+        alert("hey!");
+      }
+    });
+  });
+</script>
+
+<form action="{% url 'get_vid_chat'%}" method="POST">
+  {% csrf_token %}{{ vidurl_form.as_p }}
+  <button class="btn btn-secondary" value="{{Videos.vid_url}}" id="submit_btn">
+    Submit!
+  </button>
+</form>
+<p id="submit_text"></p>
