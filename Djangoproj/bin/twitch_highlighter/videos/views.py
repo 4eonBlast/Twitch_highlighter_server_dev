@@ -5,6 +5,7 @@ from .models import Videos
 from .forms import VidInputForm
 from django.views.decorators.csrf import csrf_exempt
 
+from .twitch_chatlog import get_chatlog
 #from .tasks import get_chatlog
 # videos model에 저장해야됨
 # download video 기능에서 더 추가 필요//
@@ -31,7 +32,7 @@ def get_vid_chat(request):
         print(req_url)
         # 여기서 req_url 확인 후, twitch replay url이 아니라면 error를 보내는// (redirect에)
 
-        # get_chatlog.delay(req_url)
+        get_chatlog.delay(req_url)
         # 여기서 모델 생성, 채팅로그, 비디오 제작 등 작업진행
         # 비디오 서버 안에 저장?
 

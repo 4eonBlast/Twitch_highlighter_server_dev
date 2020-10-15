@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+# pip install celery , django.celery.beat , django.celery.results
 INSTALLED_APPS += [
+    'django_celery_beat',
+    'django_celery_results',
     'users',
     'videos',
 ]
@@ -128,3 +131,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+CELERY_ALWAYS_EAGER = True
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
+CELERY_TIMEZONE = 'Asia/Seoul'
+# celery + redis 설정
