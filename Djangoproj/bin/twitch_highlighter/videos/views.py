@@ -26,8 +26,6 @@ def get_vid(request):
 def get_vid_chat(request):
 
     if request.method == 'POST':
-        print("hello")
-        HttpResponse("hello")
         req_url = request.POST.get('vid_url')
         print(req_url)
         # 여기서 req_url 확인 후, twitch replay url이 아니라면 error를 보내는// (redirect에)
