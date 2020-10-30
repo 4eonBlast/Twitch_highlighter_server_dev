@@ -4,6 +4,7 @@ import json
 import re
 import csv
 from os.path import dirname, join
+from .models import Videos
 from celery import shared_task
 
 current_dir = dirname(__file__)
@@ -48,7 +49,7 @@ def get_chatlog(inputurl):
         print(count)
         count += 1
 
-        if count == 50:
+        if count == 10:
             break       # for django test
 
     print("complete!")
