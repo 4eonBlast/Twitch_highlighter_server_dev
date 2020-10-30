@@ -4,6 +4,10 @@ from django.shortcuts import render
 from .forms import RegisterForm
 
 
+def home(request):
+    return render(request, 'registration/home.html')
+
+
 def register(request):
     if request.method == 'POST':
         user_form = RegisterForm(request.POST)
