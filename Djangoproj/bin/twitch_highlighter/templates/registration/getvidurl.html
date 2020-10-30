@@ -6,6 +6,11 @@
     <div class="col-12">
       <div>{%include 'registration/getvidchat.html'%}</div>
     </div>
+    {%if error%}
+    <div class="row mt-5">
+      <div class="col-12">{{error}}</div>
+    </div>
+    {%endif%}
   </div>
+  {% endblock %}
 </div>
-{% endblock %}
