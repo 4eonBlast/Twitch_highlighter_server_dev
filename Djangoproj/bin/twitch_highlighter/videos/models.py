@@ -26,9 +26,12 @@ class Videos(models.Model):
 
     streamer_name = models.ForeignKey(
         Streamer, on_delete=models.CASCADE, related_name='videos')
-    vid_url = models.CharField(max_length=128, verbose_name='VideoUrl')
+    vid_title = models.CharField(
+        max_length=128, verbose_name='vid_title', default="Unready")
+    vid_url = models.CharField(max_length=128, verbose_name='vid_url')
     vid_path = models.CharField(max_length=128, verbose_name='vid_path')
     vid_num = models.CharField(max_length=32, verbose_name='vid_num')
+    vid_file = models.FileField(upload_to="media/video", null=True)
     registered_dttm = models.DateTimeField(
         auto_now_add=True, verbose_name='registered_time')
 
