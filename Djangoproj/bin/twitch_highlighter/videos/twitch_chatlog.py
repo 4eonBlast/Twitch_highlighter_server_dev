@@ -1,20 +1,15 @@
-from __future__ import absolute_import, unicode_literals
 import requests
 import json
 import re
 import csv
 from os.path import dirname, join
 from .models import Videos
-from celery import shared_task
 
 current_dir = dirname(__file__)
 
 
-@shared_task
-def get_chatlog(inputurl):
+def get_chatlog(video_num, test_dir):
 
-    inputurl_num = re.findall("\\d+", str(inputurl))
-    video_num = "".join(inputurl_num)
     init_url = "https://api.twitch.tv/v5/videos/"
     url = init_url + str(video_num)+'/comments?'
     start = "content_offset_seconds=0"
@@ -25,13 +20,12 @@ def get_chatlog(inputurl):
     s = requests.session()
     my_data = s.get(start_url, headers=params)
     json_data = json.loads(my_data.text)
-    file_name = './' + video_num+'.csv'
-    file_path = join(current_dir, file_name)
+    file_name = video_num+'.csv'
     count = 0
 
     while(("_next" in json_data.keys())):
 
-        with open(file_path, 'a') as wf:
+        with open(test_dir+'/'+file_name, 'a') as wf:
             wc = csv.writer(wf)
             for i, commentor in enumerate(json_data["comments"], 0):
                 commentor_nick = commentor['commenter']['display_name']

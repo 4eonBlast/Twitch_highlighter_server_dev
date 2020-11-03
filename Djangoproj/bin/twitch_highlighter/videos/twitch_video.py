@@ -1,4 +1,3 @@
-from __future__ import absolute_import, unicode_literals
 import requests
 import json
 import re
@@ -9,7 +8,6 @@ import subprocess
 import ffmpeg
 from multiprocessing.pool import ThreadPool as Pool
 import time
-from celery import shared_task
 from django.conf import settings
 
 # import ffmepg binary file in bin folder!!
@@ -124,30 +122,10 @@ def create_req_urls(vid_info, ts_urls):
     return ts_url_list
 
 
-def make_dir(data):
-    directory = data["user_name"]
-    try:
-        os.mkdir("media/video")
-    except:
-        pass
-
-    try:
-        os.mkdir("media/video/" + directory)
-    except:
-        pass
-
-    directory = "media/video/" + directory+"/"+data["id"]
-    try:
-        os.mkdir(directory)
-    except:
-        pass
-
-    return directory
-
-
 def join_videos(test_dir, vid_num):
 
     vid_files = os.listdir(test_dir)
+    vid_files.remove(str(vid_num)+".csv")
     vid_files = [s[:-3] for s in vid_files]
     vid_files.sort(key=int)
     vid_files = [s+'.ts' for s in vid_files]
@@ -168,10 +146,13 @@ def join_videos(test_dir, vid_num):
         'ffmpeg -f concat -safe 0 -i ffmpeg.txt -c copy output.mp4', shell=True, cwd=test_dir)
     shutil.move(test_dir+'/output.mp4', test_dir +
                 '/' + vid_num + '.mp4')
-    os.remove("ffmpeg.txt")
+
+    print(test_dir)
     for file in os.listdir(test_dir):
         if '.ts' in file:
             os.remove(test_dir+'/' + file)
+        if 'ffmpeg' in file:
+            os.remove(test_dir+'/'+file)
     print("done")
 
 
@@ -186,8 +167,7 @@ def download_multi(file_name, url, test_dir):
         pass
 
 
-@shared_task
-def download_vid(vid_num):
+def download_vid(vid_num, test_dir):
     vid_info = get_stream_info(vid_num)
     print(vid_info)
     total_ts_files = get_vid_duration(vid_info)
@@ -201,8 +181,6 @@ def download_vid(vid_num):
     pool_size = 4
     pool = Pool(pool_size)
 
-    test_dir = make_dir(vid_info)
-    # test
     for i in range(5):
         #url = requests.get(ts_url_list[i], stream=True, headers=headers)
         file_name = re.split('/', ts_url_list[i])
