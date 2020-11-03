@@ -1,1 +1,16 @@
-{%extends "registration/_base.html"%} {% block content%} {%endblock%}
+{%extends "registration/_base.html"%} {% block content%} {%if video %}
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8">
+      <h1>{{video.vid_title}}</h1>
+    </div>
+    <div class="container">
+      {%if video.vid_file%}
+      <video src="{{video.vid_file.url}}" type="video/mp4"></video>
+      {%endif%}
+    </div>
+  </div>
+</div>
+{%else%}
+<div class="">halo</div>
+{%endif%} {%endblock%}
