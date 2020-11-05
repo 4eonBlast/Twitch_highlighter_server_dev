@@ -10,7 +10,7 @@ import os
 from .twitch_chatlog import get_chatlog
 from .twitch_video import download_vid, get_stream_info
 from celery import shared_task
-#from .tasks import get_chatlog
+# from .tasks import get_chatlog
 # videos model에 저장해야됨
 # download video 기능에서 더 추가 필요//
 # https://www.twitch.tv/videos/781069869
@@ -44,7 +44,7 @@ def create_video(video_num, dir_name, video_id):
     get_chatlog(video_num, dir_name)
     download_vid(video_num, dir_name)
     video = Videos.objects.get(pk=video_id)
-    video.vid_file = dir_name+"/"+video_num+".mp4"
+    video.vid_file = dir_name[6:]+"/"+video_num+".mp4"
     video.save()
 
 
@@ -107,6 +107,17 @@ def video_list(request):
     streamer = Streamer.objects.order_by('streamer_name')
 
     return render(request, 'videopost/video_list.html', context={'videos': videos, 'streamer': streamer})
+
+
+def video_filt_by_streamer(request, streamer_id):
+
+    streamer = get_object_or_404(Streamer, pk=streamer_id)
+    view_streamer = Streamer.objects.order_by('streamer_name')
+    videos = Videos.objects.filter(
+        streamer_name=streamer.id)
+    filter_msg = streamer.streamer_name
+
+    return render(request, 'videopost/video_list.html', context={'videos': videos, 'streamer': view_streamer, 'filter_msg': filter_msg})
 
 
 def video_detail(request, video_id):

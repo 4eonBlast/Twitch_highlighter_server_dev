@@ -1,32 +1,46 @@
 {%extends "registration/_base.html"%} {% block content%}
-<div class="container-fluid">
-  <div class="row flex-xl-nowrap">
-    <div class="col-md-3 col-xl-2 bd-sidebar">
-      {%for streamer in streamer%}
-      <div class="bd-toc-item">
-        <li class=""><a href="#" class="">{{streamer.streamer_name}} </a></li>
+<div class="container">
+  <div class="row">
+    <div class="col-6 col-sm-3">
+      <div class="streamer_list nav">
+        <ul class="nav nav-tabs nav-fill flex-sm-column">
+          <h3>Streamers</h3>
+          {%for streamer in streamer%}
+          <li class="streamer-item">
+            <a
+              href="{%url 'video_list_filt' streamer.id%}"
+              class="nav-link active"
+              >{{streamer.streamer_name}}</a
+            >
+          </li>
+          {%endfor%}
+        </ul>
       </div>
-      {%endfor%}
+    </div>
+
+    <div class="col-md-9">
+      <ul class="videolist">
+        {%if filter_msg%}
+        <h3>{{filter_msg}}'s video</h3>
+        {%else%}
+        <h3>Lastly Updated Video</h3>
+        {%endif%}
+        <div class="post-preview">
+          {%for video in videos%}
+          <li>
+            <div class="row">
+              <div class="col-sm-9">
+                <a href="{%url 'video_detail' video.id%}" class=""
+                  >{{video.vid_title}}</a
+                >
+              </div>
+              <di class="col-sm-3"> <p class="">{{video.streamer_name}}</p></di>
+            </div>
+          </li>
+          {%endfor%}
+        </div>
+      </ul>
     </div>
   </div>
-
-  <main class="col-md-9 col-xl-8 pl-md-5 bd-context" role="main">
-    <div
-      class="d-md-flex flex-md-row-reverse align-items-center justify-content-between"
-    >
-      {%for video in videos%}
-      <div class="col-lg-8 col-md-19 mx-auto">
-        <div class="post-preview">
-          <p class="post-meta">
-            <a href="{%url 'video_detail' video.id%}" class="">
-              <h2 class="video_title">{{video.vid_title}}</h2>
-              <h3 class="streamed_by">{{video.streamer_name}}</h3>
-            </a>
-          </p>
-        </div>
-      </div>
-      {%endfor%}
-    </div>
-  </main>
 </div>
 {%endblock%}

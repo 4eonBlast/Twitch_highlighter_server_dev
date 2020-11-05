@@ -40,5 +40,6 @@ class Videos(models.Model):
         return self_str
 
     class Meta:
+        ordering = ['-registered_dttm']
         db_table = 'video'
         verbose_name_plural = 'video'

@@ -15,6 +15,12 @@
       integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2"
       crossorigin="anonymous"
     />
+    <!-- video.js -->
+      <link href="https://vjs.zencdn.net/7.8.4/video-js.css" rel="stylesheet" />
+    
+      <!-- If you'd like to support IE8 (for Video.js versions prior to v7) -->
+      <script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
+
     <!-- javascript -->
     <script
       src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -42,23 +48,36 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="nav nav-pills flex-column flex-sm-row">
-            <li class="nav-item">
+            <li class="nav-item active">
               <a class="flex-sm-fill text-sm-center nav-link" href='{%url "home"%}'>Home 
                 <span class="sr-only">(current)</span>
               </a>
             </li>
             <li class="nav-item active">
               <a class="flex-sm-fill text-sm-center nav-link" href='{%url "get_vid"%}'
-                >Get_videos<span class="sr-only">(current)</span>
+                >Get videos<span class="sr-only">(current)</span>
               </a>
             </li>
+            <li class="nav-item active">
+              <a class="flex-sm-fill text-sm-center nav-link" href='{%url "video_list"%}'
+                >Video list<span class="sr-only">(current)</span>
+              </a>
+            </li>
+            </li>
+            <li class="nav-item ">
+              <a class="flex-sm-fill text-sm-center nav-link" href='{%url "login"%}'
+                >Login
+              </a>
+            </li>
+          </li>
+          <li class="nav-item">
+            <a class="flex-sm-fill text-sm-center nav-link" href='{%url "register"%}'
+              >Register
+            </a>
+          </li>
           </ul>
         </div>
       </nav>
-      <p></p>
-      <div class="row">
         {% block content %} {% endblock %}
-      
-    </div>
   </body>
 </html>
