@@ -1,5 +1,5 @@
 from django.db import models
-
+from users.models import User, BaseModel
 # Create your models here.
 
 
@@ -36,10 +36,21 @@ class Videos(models.Model):
         auto_now_add=True, verbose_name='registered_time')
 
     def __str__(self):
-        self_str = str(self.streamer_name) + ' '+self.vid_url
+        self_str = str(self.vid_num)
         return self_str
 
     class Meta:
         ordering = ['-registered_dttm']
-        db_table = 'video'
+        db_table = 'video_num'
         verbose_name_plural = 'video'
+
+
+class Comment(BaseModel):
+    post = models.ForeignKey(Videos, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    content = models.TextField()
+
+    def __str__(self):
+        self_str = str(self.post) + " - " + str(self.user)
+        return self_str

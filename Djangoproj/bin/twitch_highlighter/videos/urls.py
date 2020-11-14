@@ -9,4 +9,5 @@ urlpatterns = [
     path('videolist/<int:streamer_id>',
          views.video_filt_by_streamer, name='video_list_filt'),
     path('<int:video_id>', views.video_detail, name='video_detail'),
+    path('comment/write', views.comment_write, name='comment_write'),
 ]

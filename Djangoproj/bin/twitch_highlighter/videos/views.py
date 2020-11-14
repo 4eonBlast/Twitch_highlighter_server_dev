@@ -1,8 +1,10 @@
 from __future__ import absolute_import, unicode_literals
 from django.shortcuts import render, redirect, HttpResponseRedirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.urls import reverse
-from .models import Streamer, Videos
+from django.core.paginator import Paginator
+from .models import Streamer, Videos, Comment
 from .forms import VidInputForm
 from django.views.decorators.csrf import csrf_exempt
 import re
@@ -83,11 +85,13 @@ def get_vid_chat(request):
                 streamer_name=vid_info["user_name"])
             streamer.save()
 
-        if Videos.objects.filter(vid_num=vid_info["id"]):
-            return render(request, 'registration/getvidurl.html')
+        if Videos.objects.filter(vid_num=vid_info["id"]).exists():
+            exist_vid = Videos.objects.get(vid_num=vid_info["id"])
+            exist_error = exist_vid.id
+            return render(request, 'registration/getvidurl.html', {'exist': exist_error, 'vid_url': exist_vid.vid_url})
         else:
             video = Videos.objects.create(
-                streamer_name=streamer, vid_url=req_url, vid_path='/', vid_title=vid_info["title"])
+                streamer_name=streamer, vid_url=req_url, vid_path='/', vid_title=vid_info["title"], vid_num=vid_info["id"])
             video.save()
 
         dir_name = make_dir(vid_info)
@@ -103,8 +107,12 @@ def get_vid_chat(request):
 
 
 def video_list(request):
-    videos = Videos.objects.order_by('-registered_dttm')
+    all_videos = Videos.objects.order_by('-registered_dttm')
     streamer = Streamer.objects.order_by('streamer_name')
+
+    page = int(request.GET.get('p', 1))
+    paginator = Paginator(all_videos, 10)
+    videos = paginator.get_page(page)
 
     return render(request, 'videopost/video_list.html', context={'videos': videos, 'streamer': streamer})
 
@@ -122,8 +130,27 @@ def video_filt_by_streamer(request, streamer_id):
 
 def video_detail(request, video_id):
     video = get_object_or_404(Videos, pk=video_id)
+    comments = Comment.objects.filter(post=video.id)
+    return render(request, 'videopost/video_detail.html', context={'video': video, 'comments': comments})
 
-    return render(request, 'videopost/video_detail.html', context={'video': video})
 
-# https://www.twitch.tv/videos/789379470
-# https://www.twitch.tv/videos/786290534
+@login_required
+def comment_write(request):
+    errors = []
+    if request.method == 'POST':
+        post_id = request.POST.get('video_id', '').strip()
+        content = request.POST.get('content', '').strip()
+
+        if not content:
+            errors.append('내용을 입력해주세요.')
+        if not errors:
+            comment = Comment.objects.create(
+                user=request.user, post_id=post_id, content=content)
+            return redirect(reverse('video_detail', kwargs={'video_id': comment.post.id}))
+
+    return render(request, 'videopost/video_detail.html', {'user': request.user, 'errors': errors})
+
+
+# 괴물쥐 https://www.twitch.tv/videos/800154947
+# 빅헤드 https://www.twitch.tv/videos/799088303
+# celery -A twitch_highlighter worker --loglevel=info

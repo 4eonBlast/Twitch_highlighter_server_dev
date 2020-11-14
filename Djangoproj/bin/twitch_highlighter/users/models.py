@@ -47,3 +47,13 @@ class User(AbstractUser):
 
     def __str__(self):
         return "<%d %s>" % (self.pk, self.email)
+
+
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+
+    # 필드 선언 밑에 한줄 띄우고 // 베이스 모델이 db에 테이블로 만드는데
+    class Meta:
+        abstract = True
+        # 추상 클래스로 선언
