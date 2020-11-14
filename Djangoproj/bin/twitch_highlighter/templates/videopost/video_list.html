@@ -1,10 +1,11 @@
 {%extends "registration/_base.html"%} {% block content%}
 <div class="container">
   <div class="row">
-    <div class="col-6 col-sm-3">
+    <div class="col-6 col-sm-2">
       <div class="streamer_list nav">
+        <font size="4em"> Streamers</font>
+        <p class=""></p>
         <ul class="nav nav-tabs nav-fill flex-sm-column">
-          <h3>Streamers</h3>
           {%for streamer in streamer%}
           <li class="streamer-item">
             <a
@@ -17,29 +18,70 @@
         </ul>
       </div>
     </div>
-
     <div class="col-md-9">
-      <ul class="videolist">
-        {%if filter_msg%}
-        <h3>{{filter_msg}}'s video</h3>
-        {%else%}
+      {%if filter_msg%}
+      <div class="list_head text-allign-center">
+        <h3 class="text-allign-center">{{filter_msg}}'s video</h3>
+      </div>
+      {%else%}
+      <div class="list_head text-allign-center">
         <h3>Lastly Updated Video</h3>
-        {%endif%}
-        <div class="post-preview">
-          {%for video in videos%}
-          <li>
-            <div class="row">
-              <div class="col-sm-9">
-                <a href="{%url 'video_detail' video.id%}" class=""
-                  >{{video.vid_title}}</a
-                >
-              </div>
-              <di class="col-sm-3"> <p class="">{{video.streamer_name}}</p></di>
-            </div>
+      </div>
+      {%endif%}
+      <hr />
+      <table class="table table-light" style="table-layout: fixed">
+        <thead class="thead-light text-truncate">
+          <tr>
+            <th class="left-allign" style="width: 70%">Title</th>
+            <th style="width: 15%">Streamer</th>
+            <th style="width: 15%">###</th>
+          </tr>
+        </thead>
+        <tbody class="text-dark">
+          {% for video in videos %}
+          <tr>
+            <th class="text-truncate">
+              <a href="{%url 'video_detail' video.id%}">{{video.vid_title}}</a>
+            </th>
+            <td class="text-truncate">{{video.streamer_name}}</td>
+            <td class="text-truncate">{{video.registrered_dttm}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <nav>
+        <ul class="pagination justify-content-center">
+          {% if videos.has_previous%}
+          <li class="page-item">
+            <a href="?p ={{boards.previous_page_number}}" class="page-link"
+              >이전으로</a
+            >
           </li>
-          {%endfor%}
-        </div>
-      </ul>
+          {% else %}
+          <li class="page-item disabled">
+            <a href="#" class="page-link">이전으로</a>
+          </li>
+          {% endif %}
+
+          <li class="page-item active">
+            <a href="#" class="page-link"
+              >{{videos.number}}/{{videos.paginator.num_pages}}</a
+            >
+          </li>
+
+          {% if videos.has_next %}
+          <li class="page-item">
+            <a href="?p={{videos.next_page_number}}" class="page-link"
+              >다음으로</a
+            >
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <a href="" class="page-link">다음으로</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
     </div>
   </div>
 </div>

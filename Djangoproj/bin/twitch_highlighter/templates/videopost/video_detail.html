@@ -1,4 +1,27 @@
 {%extends "registration/_base.html"%} {% block content%} {%if video %}
+<script type="text/javascript">
+  function vidplay() {
+    var video = document.getElementById("video");
+    var button = document.getElementById("play");
+    if (video.paused) {
+      video.play();
+      button.textContent = "일시정지";
+    } else {
+      video.pause();
+      button.textContent = "재생";
+    }
+  }
+
+  function restart() {
+    var video = document.getElementById("video");
+    video.currentTime = 0;
+  }
+
+  function skip(value) {
+    var video = document.getElementById("video");
+    video.currentTime += value;
+  }
+</script>
 
 <div class="container">
   <div class="row">
@@ -9,15 +32,92 @@
       {%if video.vid_file%}
       <video
         id="video"
-        class="video-js"
+        class="video-js vjs-default-skin vjs-big-play-centered"
         preload="auto"
-        width="530"
+        width="680"
         height="400"
+        autoplay="autoplay"
         controls
       >
         <source src="{{video.vid_file.url}}" type="video/mp4" />
       </video>
+      <div class="row">
+        <div class="col-md-6" id="buttonbar">
+          <button class="btn btn-secondary" id="rew" onclick="skip(-10)">
+            << 10seconds back
+          </button>
+
+          <button class="btn btn-secondary" id="fastFwd" onclick="skip(10)">
+            10seconds skip >>
+          </button>
+        </div>
+        <!-- <div class="col-sm-4 text-allign-center" id="buttonbar">
+          <button class="btn btn-secondary" id="play" onclick="vidplay()">
+            재생
+          </button>
+        </div> 
+        <div class="col-md-6" id="buttonbar"></div>-->
+      </div>
       {%endif%}
+    </div>
+  </div>
+</div>
+<hr />
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Comments</h1>
+      <div class="comments-list">
+        {% for comment in comments %}
+        <div class="media">
+          <div class="media-body">
+            <div class="row">
+              <div class="col">
+                <h6 class="media-heading">{{comment.user}}</h6>
+                <h6 class="">{{comment.content}}</h6>
+                <hr />
+              </div>
+            </div>
+          </div>
+        </div>
+        {%endfor%}
+      </div>
+      <div>
+        <h3>Write Comments</h3>
+        <form
+          method="POST"
+          action="{% url 'comment_write' %}"
+          enctype="multipart/form-data"
+        >
+          {%csrf_token%}
+          <input type="hidden" name="video_id" value="{{video.id}}" />
+          <div class="form-group row">
+            <textarea name="content" rows="1" class="form-control"></textarea>
+          </div>
+          <div class="form-group row float-right">
+            <button
+              type="submit"
+              class="btn btn-primary"
+              id="comment_write_btn"
+            >
+              댓글쓰기
+            </button>
+          </div>
+        </form>
+
+        {% if errors%}
+        <div class="row">
+          <ul>
+            {% for error in errors %}
+            <li>
+              <div class="alert alert-primary" role="alert">{{error}}</div>
+            </li>
+            {%endfor%}
+          </ul>
+        </div>
+        {%endif%}
+      </div>
     </div>
   </div>
 </div>

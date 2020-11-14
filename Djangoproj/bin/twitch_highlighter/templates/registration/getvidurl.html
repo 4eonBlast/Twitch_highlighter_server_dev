@@ -10,6 +10,15 @@
     <div class="row mt-5">
       <div class="col-12">{{error}}</div>
     </div>
+    {%endif%} {%if exist%}
+    <div class="row mt-5">
+      <div class="col-12">
+        <p class="">{{vid_url}}</p>
+        <a href="{%url 'video_detail' exist%}" class=""
+          >Video already Exists Here!</a
+        >
+      </div>
+    </div>
     {%endif%}
   </div>
   {% endblock %}
