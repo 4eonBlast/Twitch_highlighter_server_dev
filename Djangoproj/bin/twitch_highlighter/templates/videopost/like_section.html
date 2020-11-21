@@ -1,0 +1,25 @@
+<!-- 좋아요 수 -->
+<p id="count">{{ total_likes }}개</p>
+
+<!-- 로그인 했을 경우 좋아요 누를 수 있음 -->
+{% if user.is_authenticated %} {% csrf_token %} {% if is_liked %}
+<button
+  type="submit"
+  class="btn btn-primary"
+  id="unlike"
+  name="video_id"
+  value="{{ video.id }}"
+>
+  좋아요 취소
+</button>
+{% else %}
+<button
+  type="submit"
+  class="btn btn-primary"
+  id="unlike"
+  name="video_id"
+  value="{{ video.id }}"
+>
+  좋아요
+</button>
+{% endif %} {% endif %}

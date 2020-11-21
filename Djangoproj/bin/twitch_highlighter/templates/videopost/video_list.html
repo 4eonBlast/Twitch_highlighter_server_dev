@@ -44,7 +44,7 @@
               <a href="{%url 'video_detail' video.id%}">{{video.vid_title}}</a>
             </th>
             <td class="text-truncate">{{video.streamer_name}}</td>
-            <td class="text-truncate">{{video.registrered_dttm}}</td>
+            <td class="text-truncate">{{forloop.counter}}</td>
           </tr>
           {% endfor %}
         </tbody>

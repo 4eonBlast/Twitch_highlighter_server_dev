@@ -34,10 +34,14 @@ class Videos(models.Model):
     vid_file = models.FileField(upload_to="media/video", null=True)
     registered_dttm = models.DateTimeField(
         auto_now_add=True, verbose_name='registered_time')
+    likes = models.ManyToManyField(User, related_name='likes', blank=True)
 
     def __str__(self):
         self_str = str(self.vid_num)
         return self_str
+
+    def total_likes(self):
+        return self.likes.count()
 
     class Meta:
         ordering = ['-registered_dttm']
@@ -48,7 +52,8 @@ class Videos(models.Model):
 class Comment(BaseModel):
     post = models.ForeignKey(Videos, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-
+    registered_dttm = models.DateTimeField(
+        auto_now_add=True, verbose_name='registered_time')
     content = models.TextField()
 
     def __str__(self):

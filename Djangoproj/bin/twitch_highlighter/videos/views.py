@@ -1,5 +1,5 @@
 from __future__ import absolute_import, unicode_literals
-from django.shortcuts import render, redirect, HttpResponseRedirect, get_object_or_404
+from django.shortcuts import render, redirect, HttpResponseRedirect, get_object_or_404, Http404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.urls import reverse
@@ -9,6 +9,7 @@ from .forms import VidInputForm
 from django.views.decorators.csrf import csrf_exempt
 import re
 import os
+import json
 from .twitch_chatlog import get_chatlog
 from .twitch_video import download_vid, get_stream_info
 from celery import shared_task
@@ -50,15 +51,16 @@ def create_video(video_num, dir_name, video_id):
     video.save()
 
 
+@login_required
 def get_vid(request):
 
     if request.method == 'GET':
         vidurl_form = VidInputForm()
-        return render(request, 'registration/getvidurl.html', {'vidurl_form': vidurl_form})
+        return render(request, 'registration/getvidurl.html', {'user': request.user, 'vidurl_form': vidurl_form})
 
     if request. method == 'POST':
 
-        return HttpResponse("<div>Hello!</div>")
+        return Http404
 
 
 @csrf_exempt
@@ -88,7 +90,7 @@ def get_vid_chat(request):
         if Videos.objects.filter(vid_num=vid_info["id"]).exists():
             exist_vid = Videos.objects.get(vid_num=vid_info["id"])
             exist_error = exist_vid.id
-            return render(request, 'registration/getvidurl.html', {'exist': exist_error, 'vid_url': exist_vid.vid_url})
+            return render(request, 'registration/getvidurl.html', {'user': request.user, 'exist': exist_error, 'vid_url': exist_vid.vid_url})
         else:
             video = Videos.objects.create(
                 streamer_name=streamer, vid_url=req_url, vid_path='/', vid_title=vid_info["title"], vid_num=vid_info["id"])
@@ -114,7 +116,7 @@ def video_list(request):
     paginator = Paginator(all_videos, 10)
     videos = paginator.get_page(page)
 
-    return render(request, 'videopost/video_list.html', context={'videos': videos, 'streamer': streamer})
+    return render(request, 'videopost/video_list.html', context={'user': request.user, 'videos': videos, 'streamer': streamer})
 
 
 def video_filt_by_streamer(request, streamer_id):
@@ -125,13 +127,20 @@ def video_filt_by_streamer(request, streamer_id):
         streamer_name=streamer.id)
     filter_msg = streamer.streamer_name
 
-    return render(request, 'videopost/video_list.html', context={'videos': videos, 'streamer': view_streamer, 'filter_msg': filter_msg})
+    return render(request, 'videopost/video_list.html', context={'user': request.user, 'videos': videos, 'streamer': view_streamer, 'filter_msg': filter_msg})
 
 
 def video_detail(request, video_id):
     video = get_object_or_404(Videos, pk=video_id)
-    comments = Comment.objects.filter(post=video.id)
-    return render(request, 'videopost/video_detail.html', context={'video': video, 'comments': comments})
+    comments = Comment.objects.filter(
+        post=video.id).order_by('-registered_dttm')
+
+    is_liked = False
+
+    if video.likes.filter(id=request.user.id).exists():
+        is_liked = True
+
+    return render(request, 'videopost/video_detail.html', context={'user': request.user, 'video': video, 'comments': comments, 'is_liked': is_liked, 'total_likes': video.total_likes()})
 
 
 @login_required
@@ -149,6 +158,23 @@ def comment_write(request):
             return redirect(reverse('video_detail', kwargs={'video_id': comment.post.id}))
 
     return render(request, 'videopost/video_detail.html', {'user': request.user, 'errors': errors})
+
+
+@login_required
+def post_like(request):
+    post = get_object_or_404(Videos, id=request.POST.get('video_id'))
+    is_liked = post.likes.filter(id=request.user.id).exists()
+    comments = Comment.objects.filter(post=post.id)
+    if is_liked:
+        post.likes.remove(request.user)
+        is_liked = False
+    else:
+        post.likes.add(request.user)
+        is_liked = True
+
+    context = {'is_liked': is_liked, 'total_likes': post.total_likes()}
+    return HttpResponse(json.dumps(context), content_type='application/json')
+    # return HttpResponseRedirect(reverse('video_detail', kwargs={'video_id': post.id}))
 
 
 # 괴물쥐 https://www.twitch.tv/videos/800154947

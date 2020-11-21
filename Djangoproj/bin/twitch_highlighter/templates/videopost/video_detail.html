@@ -22,13 +22,50 @@
     video.currentTime += value;
   }
 </script>
-
 <div class="container">
   <div class="row">
     <div class="col-lg-8">
-      <h1>{{video.vid_title}}</h1>
+      <div class="row-sm-5">
+        <h3>{{video.vid_title}}</h3>
+      </div>
+      <div class="row-sm-3" id="#like_section">
+        {%include 'videopost/like_section.html' %}
+      </div>
     </div>
-    <div class="container">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function (event) {
+        $(document).on("click", "#unlike", function (event) {
+          event.preventDefault();
+          var pk = $(this).attr("value");
+          $.ajax({
+            type: "POST",
+            url: '{% url "post_like" %}',
+            data: {
+              video_id: pk,
+              csrfmiddlewaretoken: "{{ csrf_token }}",
+              total_likes: "video.total_likes",
+              is_liked: "is_liked",
+            },
+            dataType: "json",
+            success: function (response) {
+              $("#count").html(response.total_likes + "개");
+              if (response.is_liked) {
+                $("#unlike").html("Unlike");
+              } else {
+                $("#unlike").html("Like");
+              }
+            },
+            error: function (rs, e) {
+              alert("안됨");
+              console.log(rs.responseText);
+            },
+          });
+        });
+      });
+    </script>
+    <div class="container-fluid">
       {%if video.vid_file%}
       <video
         id="video"
@@ -67,22 +104,6 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12">
-      <h1>Comments</h1>
-      <div class="comments-list">
-        {% for comment in comments %}
-        <div class="media">
-          <div class="media-body">
-            <div class="row">
-              <div class="col">
-                <h6 class="media-heading">{{comment.user}}</h6>
-                <h6 class="">{{comment.content}}</h6>
-                <hr />
-              </div>
-            </div>
-          </div>
-        </div>
-        {%endfor%}
-      </div>
       <div>
         <h3>Write Comments</h3>
         <form
@@ -105,7 +126,6 @@
             </button>
           </div>
         </form>
-
         {% if errors%}
         <div class="row">
           <ul>
@@ -118,9 +138,60 @@
         </div>
         {%endif%}
       </div>
+      <h1>Comments</h1>
+      <div class="comments-list" id="comment_section">
+        {% for comment in comments %}
+        <div class="media">
+          <div class="media-body">
+            <div class="row">
+              <div class="col">
+                <span class="media-heading">{{comment.user.email}}</span>
+                <span class="pull-right" style="color: grey"></span>
+                  On {{comment.registered_dttm}}</span
+                >
+                <div class="col">
+                  <h6 class="">{{comment.content}}</h6>
+                </div>
+                <hr />
+              </div>
+            </div>
+          </div>
+        </div>
+        {%endfor%}
+      </div>
     </div>
   </div>
 </div>
 {%else%}
 <div class="">Video is unready</div>
-{%endif%} {%endblock%}
+{%endif%}
+
+<!-- <li>
+  <input type="button" class="like" name="{{ post.id }}" value="Like">
+  </p>
+</li>
+
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+  $(".like").click(function(){
+    var pk = $(this).attr('name')
+    $.ajax({ // .like 버튼을 클릭하면 <새로고침> 없이 ajax로 서버와 통신하겠다.
+      type: "POST", // 데이터를 전송하는 방법을 지정
+      url: "{% url 'post_like' %}", // 통신할 url을 지정
+      data: {'pk': pk, 'csrfmiddlewaretoken': '{{ csrf_token }}'}, // 서버로 데이터 전송시 옵션
+      dataType: "json", // 서버측에서 전송한 데이터를 어떤 형식의 데이터로서 해석할 것인가를 지정, 없으면 알아서 판단
+      // 서버측에서 전송한 Response 데이터 형식 (json)
+      // {'likes_count': post.like_count, 'message': message }
+      
+      success: function (data) {
+        var str = "";
+        alert("ajax통신!");
+      },
+      error: function (request, status, error) {
+        alert("실패");
+      },
+    });
+  })
+</script> -->
+
+{%endblock%}
