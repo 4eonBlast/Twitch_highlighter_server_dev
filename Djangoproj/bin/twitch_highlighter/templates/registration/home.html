@@ -1,1 +1,88 @@
-{% extends "./_base.html" %} {% block content %} {% endblock %}
+{% extends "./_base.html" %} {% block content %}
+<div class="container">
+  <br />
+  <div class="row text-allign-center">
+    <div class="col-md-6">
+      <a href="{%url 'get_vid'%}" class=""
+        ><h2>Get your replay video here</h2></a
+      >
+    </div>
+    <div class="col-md-6">
+      <h5>Search streamer name</h5>
+      <form action="{%url 'video_search'%}" method="GET">
+        <input
+          class="form-control"
+          type="text"
+          placeholder="Search"
+          aria-label="Search"
+          name="v"
+          value="{{v}}"
+        />
+      </form>
+      {%if error%}
+      <span class="">{{error}}</span>
+      {%endif%}
+    </div>
+  </div>
+
+  <br />
+  <br />
+  <div class="row">
+    <div class="col-md-6">
+      <div class="list_head text-allign-center">
+        <h3>Most Liked Video</h3>
+      </div>
+      <hr />
+      <table class="table table-light" style="table-layout: fixed">
+        <thead class="thead-light text-truncate">
+          <tr>
+            <th class="left-allign" style="width: 15%">Rank</th>
+            <th class="text-center" style="width: 55%">Title</th>
+            <th style="width: 30%">Streamer</th>
+          </tr>
+        </thead>
+        <tbody class="text-dark">
+          {% for video in like_videos %}
+          <tr>
+            <td class="">{{forloop.counter}}</td>
+            <td class="text-truncate">
+              <a href="{%url 'video_detail' video.id%}" style="color: green"
+                >{{video.vid_title}}</a
+              >
+            </td>
+            <td class="text-truncate">{{video.streamer_name}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-6">
+      <div class="list_head text-allign-center">
+        <h3>Latest Video</h3>
+      </div>
+      <hr />
+      <table class="table table-light" style="table-layout: fixed">
+        <thead class="thead-light text-truncate">
+          <tr>
+            <th class="left-allign" style="width: 70%">Title</th>
+            <th style="width: 30%">Streamer</th>
+          </tr>
+        </thead>
+        <tbody class="text-dark">
+          {% for video in latest_videos %}
+          <tr>
+            <th class="text-truncate">
+              <a href="{%url 'video_detail' video.id%}" style="color: green"
+                >{{video.vid_title}}</a
+              >
+            </th>
+            <td class="text-truncate">{{video.streamer_name}}</td>
+            <td class="text-truncate">{{video.registrered_dttm}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{%endblock%}
