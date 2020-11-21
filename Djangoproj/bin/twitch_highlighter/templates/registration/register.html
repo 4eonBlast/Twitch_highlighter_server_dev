@@ -4,11 +4,14 @@
   <hr />
   <div class="row mt-5">
     <div class="col-12">
-      <form action="." method="POST">
+      <form action="{%url 'register'%}" method="POST">
         {{ user_form.as_p }} {% csrf_token %}
+
+        <button class="btn btn-secondary" type="submit" value="submit">
+          Submit
+        </button>
       </form>
     </div>
   </div>
-  <input class="btn btn-secondary" type="submit" value="submit" />
 </div>
 {% endblock %}
