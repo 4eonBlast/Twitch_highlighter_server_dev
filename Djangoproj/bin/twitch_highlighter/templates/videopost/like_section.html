@@ -1,5 +1,5 @@
 <!-- 좋아요 수 -->
-<p id="count">{{ total_likes }}개</p>
+<span id="count">좋아요 {{ total_likes }}개</span>
 
 <!-- 로그인 했을 경우 좋아요 누를 수 있음 -->
 {% if user.is_authenticated %} {% csrf_token %} {% if is_liked %}

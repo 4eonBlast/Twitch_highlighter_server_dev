@@ -136,6 +136,7 @@ def video_detail(request, video_id):
         post=video.id).order_by('-registered_dttm')
 
     is_liked = False
+    video.update_counter  # 조회수 증가
 
     if video.likes.filter(id=request.user.id).exists():
         is_liked = True
@@ -179,4 +180,5 @@ def post_like(request):
 
 # 괴물쥐 https://www.twitch.tv/videos/800154947
 # 빅헤드 https://www.twitch.tv/videos/799088303
+# https://www.twitch.tv/videos/811718768
 # celery -A twitch_highlighter worker --loglevel=info

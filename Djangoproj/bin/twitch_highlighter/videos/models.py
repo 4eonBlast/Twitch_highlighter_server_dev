@@ -35,6 +35,7 @@ class Videos(models.Model):
     registered_dttm = models.DateTimeField(
         auto_now_add=True, verbose_name='registered_time')
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
+    n_hit = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         self_str = str(self.vid_num)
@@ -42,6 +43,11 @@ class Videos(models.Model):
 
     def total_likes(self):
         return self.likes.count()
+
+    @property
+    def update_counter(self):
+        self.n_hit = self.n_hit+1
+        self.save()
 
     class Meta:
         ordering = ['-registered_dttm']

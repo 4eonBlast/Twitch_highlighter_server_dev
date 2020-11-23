@@ -1,4 +1,4 @@
-{%extends "registration/_base.html"%} {% block content%} {%if video %}
+{%extends "registration/_base.html"%} {% block content%}  {%if video %} 
 <script type="text/javascript">
   function vidplay() {
     var video = document.getElementById("video");
@@ -26,13 +26,15 @@
   <div class="row">
     <div class="col-lg-8">
       <div class="row-sm-5">
-        <h3>{{video.vid_title}}</h3>
-      </div>
-      <div class="row-sm-3" id="#like_section">
-        {%include 'videopost/like_section.html' %}
+        <h3>{{video.vid_title|truncatechars:30}}
+        </h3>
+        <h5 >Streamed by {{video.streamer_name}}</h5>
       </div>
     </div>
-
+      <div class="row-sm-3" id="#like_section">
+        <div class="col">조회수 {{video.n_hit}}회</div>
+        <div class="col">{%include 'videopost/like_section.html' %}</div>
+      </div>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="text/javascript">
       $(document).ready(function (event) {
@@ -58,7 +60,7 @@
               }
             },
             error: function (rs, e) {
-              alert("안됨");
+              alert("ajax error");
               console.log(rs.responseText);
             },
           });
@@ -165,33 +167,4 @@
 {%else%}
 <div class="">Video is unready</div>
 {%endif%}
-
-<!-- <li>
-  <input type="button" class="like" name="{{ post.id }}" value="Like">
-  </p>
-</li>
-
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-<script type="text/javascript">
-  $(".like").click(function(){
-    var pk = $(this).attr('name')
-    $.ajax({ // .like 버튼을 클릭하면 <새로고침> 없이 ajax로 서버와 통신하겠다.
-      type: "POST", // 데이터를 전송하는 방법을 지정
-      url: "{% url 'post_like' %}", // 통신할 url을 지정
-      data: {'pk': pk, 'csrfmiddlewaretoken': '{{ csrf_token }}'}, // 서버로 데이터 전송시 옵션
-      dataType: "json", // 서버측에서 전송한 데이터를 어떤 형식의 데이터로서 해석할 것인가를 지정, 없으면 알아서 판단
-      // 서버측에서 전송한 Response 데이터 형식 (json)
-      // {'likes_count': post.like_count, 'message': message }
-      
-      success: function (data) {
-        var str = "";
-        alert("ajax통신!");
-      },
-      error: function (request, status, error) {
-        alert("실패");
-      },
-    });
-  })
-</script> -->
-
 {%endblock%}

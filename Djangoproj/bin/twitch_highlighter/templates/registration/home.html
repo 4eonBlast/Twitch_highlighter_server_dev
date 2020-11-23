@@ -58,26 +58,27 @@
     </div>
     <div class="col-md-6">
       <div class="list_head text-allign-center">
-        <h3>Latest Video</h3>
+        <h3>Most Hit Video</h3>
       </div>
       <hr />
       <table class="table table-light" style="table-layout: fixed">
         <thead class="thead-light text-truncate">
           <tr>
-            <th class="left-allign" style="width: 70%">Title</th>
+            <th class="left-allign" style="width: 15%">Rank</th>
+            <th class="text-center" style="width: 55%">Title</th>
             <th style="width: 30%">Streamer</th>
           </tr>
         </thead>
         <tbody class="text-dark">
-          {% for video in latest_videos %}
+          {% for video in hit_videos %}
           <tr>
-            <th class="text-truncate">
+            <td class="">{{forloop.counter}}</td>
+            <td class="text-truncate">
               <a href="{%url 'video_detail' video.id%}" style="color: green"
                 >{{video.vid_title}}</a
               >
-            </th>
+            </td>
             <td class="text-truncate">{{video.streamer_name}}</td>
-            <td class="text-truncate">{{video.registrered_dttm}}</td>
           </tr>
           {% endfor %}
         </tbody>
