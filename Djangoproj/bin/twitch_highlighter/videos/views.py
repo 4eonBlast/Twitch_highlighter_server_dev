@@ -99,12 +99,10 @@ def get_vid_chat(request):
         dir_name = make_dir(vid_info)
         # video_save 여기서
         # 여기서 모델 생성, 채팅로그, 비디오 제작 등 작업진행
-        # 비디오 서버 안에 저장?
 
         create_video.delay(video_num, dir_name, video.id)
-        return redirect(get_vid)
+        return render(request, 'registration/getvidurl.html', {'user': request.user, 'error': "It will take about 5 minutes to create highlight!"})
     else:
-        print("hello")
         return redirect(get_vid)
 
 
@@ -181,4 +179,6 @@ def post_like(request):
 # 괴물쥐 https://www.twitch.tv/videos/800154947
 # 빅헤드 https://www.twitch.tv/videos/799088303
 # https://www.twitch.tv/videos/811718768
+# https://www.twitch.tv/videos/810590065
+# https://www.twitch.tv/videos/808216734
 # celery -A twitch_highlighter worker --loglevel=info

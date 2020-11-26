@@ -25,12 +25,13 @@ def search(request):
     paginator = Paginator(sort_by_like, 10)
     like_videos = paginator.get_page(page)
 
-    latest = Videos.objects.all().order_by('-registered_dttm')
+    sort_by_hit = Videos.objects.annotate(
+        hit_count=Count('n_hit')).order_by('-n_hit')
     page = int(request.GET.get('p', 1))
-    paginator = Paginator(latest, 10)
-    latest_vid = paginator.get_page(page)
+    paginator = Paginator(sort_by_hit, 10)
+    hit_vid = paginator.get_page(page)
     error = "no such streamer"
-    return render(request, 'registration/home.html', context={'like_videos': like_videos, 'latest_videos': latest_vid, 'error': error})
+    return render(request, 'registration/home.html', context={'like_videos': like_videos, 'hit_videos': hit_vid, 'error': error})
 
 
 def home(request):
