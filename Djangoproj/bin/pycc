@@ -1,0 +1,3 @@
+#!/Users/hoon/Desktop/Team_Bighead_Capston/Djangoproj/bin/python3
+from numba.pycc import main
+main()
