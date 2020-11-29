@@ -23,6 +23,7 @@ def get_chatlog(video_num, test_dir):
     file_name = video_num+'.csv'
     count = 0
 
+    print("Crawling Chatting logs")
     while(("_next" in json_data.keys())):
 
         with open(test_dir+'/'+file_name, 'a') as wf:
@@ -40,12 +41,11 @@ def get_chatlog(video_num, test_dir):
         next_url = url + "cursor=" + json_data['_next']
         my_data = s.get(next_url, headers=params)
         json_data = json.loads(my_data.text)
-        print(count)
         count += 1
 
-        if count == 10:
-            break       # for django test
+        # if count == 10:
+        #     break       # for django test
 
-    print("complete!")
+    print("Chatting log Crawling complete!")
 
     return 1

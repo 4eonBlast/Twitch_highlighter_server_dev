@@ -1,7 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery
-
+from words_builder import Words_Builder
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'twitch_highlighter.settings')
 

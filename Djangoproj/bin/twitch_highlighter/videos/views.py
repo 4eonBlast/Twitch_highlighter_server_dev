@@ -13,11 +13,8 @@ import json
 from .twitch_chatlog import get_chatlog
 from .twitch_video import download_vid, get_stream_info
 from celery import shared_task
-# from .tasks import get_chatlog
-# videos model에 저장해야됨
-# download video 기능에서 더 추가 필요//
-# https://www.twitch.tv/videos/781069869
-# https://www.twitch.tv/videos/781288596
+from .trained_model import get_csv
+import pickle
 
 
 def make_dir(data):
@@ -45,7 +42,13 @@ def make_dir(data):
 def create_video(video_num, dir_name, video_id):
 
     get_chatlog(video_num, dir_name)
-    download_vid(video_num, dir_name)
+
+    csv_path = dir_name+"/"+video_num+".csv"
+    print(csv_path)
+    print("Extracting highlight parts")
+    highlight_list = get_csv(csv_path)
+
+    download_vid(video_num, dir_name, highlight_list)
     video = Videos.objects.get(pk=video_id)
     video.vid_file = dir_name[6:]+"/"+video_num+".mp4"
     video.save()
@@ -176,9 +179,4 @@ def post_like(request):
     # return HttpResponseRedirect(reverse('video_detail', kwargs={'video_id': post.id}))
 
 
-# 괴물쥐 https://www.twitch.tv/videos/800154947
-# 빅헤드 https://www.twitch.tv/videos/799088303
-# https://www.twitch.tv/videos/811718768
-# https://www.twitch.tv/videos/810590065
-# https://www.twitch.tv/videos/808216734
 # celery -A twitch_highlighter worker --loglevel=info

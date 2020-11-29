@@ -9,7 +9,6 @@ import ffmpeg
 from multiprocessing.pool import ThreadPool as Pool
 import time
 from django.conf import settings
-
 # import ffmepg binary file in bin folder!!
 client_id = "uc4dkdk0aam0pqtmmeujj6ztl5uqmp"
 client_secret = "rnz2ayo0vhraicw2s1lop8nn4jg7qn"
@@ -26,8 +25,6 @@ def revoke_access_token(token):
     oauth_base = "https://id.twitch.tv/oauth2/revoke?"+"client_id="+client_id
     revoke_url = oauth_base + "&="+token
     test = requests.post(revoke_url)
-
-    print(test)
     return
 
 
@@ -47,7 +44,6 @@ def get_stream_info(video_id):
     access_token = get_access_token()
     headers['Authorization'] = "Bearer "+access_token
     req = requests.get(url, params, headers=headers)
-    print(headers)
     print(url)
     if 400 <= req.status_code < 500:
         print(req.text)
@@ -126,6 +122,7 @@ def join_videos(test_dir, vid_num):
 
     vid_files = os.listdir(test_dir)
     vid_files.remove(str(vid_num)+".csv")
+
     vid_files = [s[:-3] for s in vid_files]
     vid_files.sort(key=int)
     vid_files = [s+'.ts' for s in vid_files]
@@ -153,7 +150,7 @@ def join_videos(test_dir, vid_num):
             os.remove(test_dir+'/' + file)
         if 'ffmpeg' in file:
             os.remove(test_dir+'/'+file)
-    print("done")
+    print("Creating highlight video done")
 
 
 def download_multi(file_name, url, test_dir):
@@ -167,7 +164,7 @@ def download_multi(file_name, url, test_dir):
         pass
 
 
-def download_vid(vid_num, test_dir):
+def download_vid(vid_num, test_dir, highlight_list):
     vid_info = get_stream_info(vid_num)
     print(vid_info)
     total_ts_files = get_vid_duration(vid_info)
@@ -175,20 +172,27 @@ def download_vid(vid_num, test_dir):
 
     ts_url_list = create_req_urls(vid_info, total_ts_files)
 
-#    for i in range(total_ts_files):
-#        print(ts_url_list[i])
-
     pool_size = 4
     pool = Pool(pool_size)
 
-    for i in range(5):
+    for i, v in enumerate(highlight_list):
         #url = requests.get(ts_url_list[i], stream=True, headers=headers)
-        file_name = re.split('/', ts_url_list[i])
-        file_name = file_name[5]
-        pool.apply_async(download_multi, (file_name, ts_url_list[i], test_dir))
-        # if url.ok:
-        #     with open(test_dir + '/' + file_name, 'wb') as out_file:
-        #         shutil.copyfileobj(url.raw, out_file)
+        if v == 0:
+            continue
+        else:
+            if highlight_list[i-1] == 0 and i != 0:
+                file_name = re.split('/', ts_url_list[i-1])
+                file_name = file_name[5]
+                pool.apply_async(
+                    download_multi, (file_name, ts_url_list[i-1], test_dir))
+
+            file_name = re.split('/', ts_url_list[i])
+            file_name = file_name[5]
+            pool.apply_async(
+                download_multi, (file_name, ts_url_list[i], test_dir))
+            # if url.ok:
+            #     with open(test_dir + '/' + file_name, 'wb') as out_file:
+            #         shutil.copyfileobj(url.raw, out_file)
     pool.close()
     pool.join()
 
